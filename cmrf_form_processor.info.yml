@@ -1,0 +1,7 @@
+name: 'CMFR Form Processor'
+type: module
+description: 'Submit Webform actions to the CiviCRM forms_processor with CiviMFR'
+core: 8.x
+package: 'CiviCRM'
+dependencies:
+  - cmrf_webform

@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains cmrf_form_processor.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function cmrf_form_processor_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the cmrf_form_processor module.
+    case 'help.page.cmrf_form_processor':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Submit Webform actions to the CiviCRM forms_processor with CiviMFR') . '</p>';
+      return $output;
+
+    default:
+  }
+}
