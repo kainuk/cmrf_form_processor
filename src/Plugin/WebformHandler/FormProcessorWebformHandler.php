@@ -90,6 +90,7 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
       'form_processor' => null,
       'form_processor_fields' => [],
       'form_processor_params' => [],
+      'form_processor_current_contact' => 0,
       'form_processor_background' =>0,
     ];
   }
@@ -165,6 +166,12 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
             ]
           ];
         }
+        $form['additional']['form_processor_current_contact'] = [
+          '#type' => 'select',
+          '#title' => 'Fill Current Contact',
+          '#default_value' => $this->configuration['form_processor_current_contact'],
+          '#options' => [0 => "-None-"]+$this->formProcessorFields($selected_connection, $selected_formprocessor),
+        ];
       }
     }
 
@@ -189,6 +196,7 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
     $this->configuration['form_processor']        = $values['form_processor'];
     $this->configuration['form_processor_fields'] = $values['additional']['fields'];
     $this->configuration['form_processor_params'] = $values['additional']['params'];
+    $this->configuration['form_processor_current_contact'] = $values['form_processor_current_contact'];
 
     $builder = new FormProcessorWebformBuilder($this->getWebform());
     $builder->addFields($this->configuration['form_processor_fields']);
@@ -243,6 +251,9 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
       if(key_exists($key,$data)){
         $params[$key]=$data[$key];
       }
+    }
+    if( $this->configuration['form_processor_current_contact']){
+      $params[$this->configuration['form_processor_current_contact']]=$this->getContactId();
     }
     $call = $this->core->createCall($this->configuration['connection'],'FormProcessor',$this->configuration['form_processor'],$params,[]);
     $this->core->executeCall($call);
