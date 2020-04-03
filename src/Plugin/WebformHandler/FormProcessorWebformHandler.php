@@ -90,6 +90,7 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
       'form_processor' => null,
       'form_processor_fields' => [],
       'form_processor_params' => [],
+      'form_processor_background' =>0,
     ];
   }
 
@@ -131,20 +132,41 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
         '#default_value' => $this->configuration['form_processor'],
       ];
       $form['additional'] =
-        ['#type' => 'fieldset',
-          '#title' => $this->t('FP Fields'),
+        [ '#type' => 'fieldset',
+          '#title' => $this->t('Form Processor'),
         ];
-      if($selected_formprocessor){
-        foreach($this->formProcessorFields($selected_connection,$selected_formprocessor) as $key=>$field){
-          $form['additional'][$key] = [
+      if ($selected_formprocessor) {
+        $form['additional']['fields'] =
+          [
+            '#type' => 'fieldset',
+            '#title' => $this->t('Fields'),
+          ];
+        foreach ($this->formProcessorFields($selected_connection, $selected_formprocessor) as $key => $field) {
+          $form['additional']['fields'][$key] = [
             '#type' => 'checkbox',
             '#title' => $field,
             '#default_value' => $this->configuration['form_processor_fields'][$key],
           ];
         }
+        $form['additional']['params'] =
+          [
+            '#type' => 'fieldset',
+            '#title' => $this->t('Parameters'),
+          ];
+        foreach ($this->formProcessorDefaultsParams($selected_connection, $selected_formprocessor) as $key => $field) {
+          $form['additional']['params'][$key] = [
+            '#type' => 'select',
+            '#title' => $field,
+            '#default_value' => $this->configuration['form_processor_params'][$key],
+            '#options' => [
+               'none' => 'None',
+               'url'=> 'URL',
+               'current_user' => 'Current User'
+            ]
+          ];
+        }
       }
     }
-
 
     $this->elementTokenValidate($form);
 
@@ -163,22 +185,21 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
     parent::submitConfigurationForm($form, $form_state);
     $this->applyFormStateToConfiguration($form_state);
     $values = $form_state->getValues();
-    $this->configuration['connection']     = $values['connection'];
-    $this->configuration['form_processor'] = $values['form_processor'];
-    $this->configuration['form_processor_fields'] = $values['additional'];
+    $this->configuration['connection']            = $values['connection'];
+    $this->configuration['form_processor']        = $values['form_processor'];
+    $this->configuration['form_processor_fields'] = $values['additional']['fields'];
+    $this->configuration['form_processor_params'] = $values['additional']['params'];
 
     $builder = new FormProcessorWebformBuilder($this->getWebform());
     $builder->addFields($this->configuration['form_processor_fields']);
     $builder->deleteFields($this->configuration['form_processor_fields']);
     $builder->save();
+  }
 
-    $selected_connection = empty($this->configuration['connection'])?null:$this->configuration['connection'];
-    $selected_formprocessor = empty($this->configuration['form_processor'])?null:$this->configuration['form_processor'];
-
-    if($selected_connection && $selected_formprocessor){
-      $params = $this->formProcessorDefaultsParams($selected_connection,$selected_formprocessor);
-      $this->configuration['form_processor_params'] = $params;
-    }
+  private function getContactId() {
+    $id =  \Drupal::currentUser()->id();
+    $currentUser = \Drupal::entityTypeManager()->getStorage('user')->load($id);
+    return $currentUser->field_user_contact_id->value;
   }
 
   public function alterForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
@@ -187,9 +208,12 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
       return; // no form_processor params means no form defaults so retun
     }
     $params = [];
-    foreach($form_processor_params as $fp_param){
-      if(\Drupal::request()->get($fp_param)){
-        $params[$fp_param] = \Drupal::request()->get($fp_param);
+    foreach($form_processor_params as $key => $fp_param){
+      if($fp_param=='url' && \Drupal::request()->get($key)){
+        $params[$key] = \Drupal::request()->get($key);
+      }
+      if($fp_param=='current_user' && $this->getContactId()){
+        $params[$key] = $this->getContactId();
       }
     }
     if(empty($params)){
