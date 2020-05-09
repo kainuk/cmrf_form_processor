@@ -1,0 +1,20 @@
+{
+    "name": "drupal/cmrf_form_processor",
+    "type": "drupal-module",
+    "description": "Webform handler that connects to the CiviCRM forms processor",
+    "keywords": [
+        "Drupal",
+        "CiviCRM",
+        "Webform"
+    ],
+    "homepage": "https://lab.civicrm.org/kainuk/cmrf_form_processor",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name" : "Klaas Eikelboom",
+            "email" : "klaas.eikelboom@civicoop.org"
+        }    ],
+    "require": {
+        "drupal/cmrf_core": "dev-master"
+    }
+}
