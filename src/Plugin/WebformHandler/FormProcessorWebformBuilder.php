@@ -20,15 +20,23 @@ class FormProcessorWebformBuilder {
     $this->webform = $webform;
   }
 
-  public function addFields($fields){
+  public function addFields($fields,$fpValues){
     $flattenedElements = $this->webform->getElementsDecodedAndFlattened();
     $elements = $this->webform->getElementsDecoded();
     foreach($fields as $key=>$value){
       if($value==1 && !key_exists($key,$flattenedElements)){
-         $elements[$key] = [
-            '#type' => 'textfield',
-            '#title' => $key
-         ];
+         if(empty($fpValues[$key]['options'])) {
+           $elements[$key] = [
+             '#type' => 'textfield',
+             '#title' => $key
+           ];
+         } else {
+           $elements[$key] = [
+             '#type' => 'select',
+             '#title' => $key,
+             '#options' => $fpValues[$key]['options'],
+           ];
+         }
       }
     }
     $this->webform->set('elements',Yaml::encode($elements));

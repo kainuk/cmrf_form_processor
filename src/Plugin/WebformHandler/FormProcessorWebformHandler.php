@@ -142,7 +142,8 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
             '#type' => 'fieldset',
             '#title' => $this->t('Fields'),
           ];
-        foreach ($this->formProcessorFields($selected_connection, $selected_formprocessor) as $key => $field) {
+        $fpValues = $this->formProcessorFields($selected_connection, $selected_formprocessor);
+        foreach ($this->mapTitle($fpValues)  as $key => $field) {
           $form['additional']['fields'][$key] = [
             '#type' => 'checkbox',
             '#title' => $field,
@@ -166,11 +167,12 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
             ]
           ];
         }
+
         $form['additional']['form_processor_current_contact'] = [
           '#type' => 'select',
           '#title' => 'Fill Current Contact',
           '#default_value' => $this->configuration['form_processor_current_contact'],
-          '#options' => [0 => "-None-"]+$this->formProcessorFields($selected_connection, $selected_formprocessor),
+          '#options' => [0 => "-None-"]+$this->mapTitle($fpValues),
         ];
       }
     }
@@ -199,7 +201,8 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
     $this->configuration['form_processor_current_contact'] = $values['form_processor_current_contact'];
 
     $builder = new FormProcessorWebformBuilder($this->getWebform());
-    $builder->addFields($this->configuration['form_processor_fields']);
+    $fpValues = $this->formProcessorFields($this->configuration['connection']  , $this->configuration['form_processor']);
+    $builder->addFields($this->configuration['form_processor_fields'],$fpValues);
     $builder->deleteFields($this->configuration['form_processor_fields']);
     $builder->save();
   }
@@ -267,7 +270,10 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
 
   private function formProcessorFields($connection,$formprocessor){
     $call = $this->core->createCall($connection,'FormProcessor','getfields',['api_action'=>$formprocessor],['limit'=>0]);
-    $values = $this->core->executeCall($call)['values'];
+    return $this->core->executeCall($call)['values'];
+  }
+
+  private function mapTitle($values){
     return array_map(function($value) { return $value['title']; } ,$values);
   }
 
