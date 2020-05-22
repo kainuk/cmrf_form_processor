@@ -278,7 +278,7 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
   }
 
   private function formProcessorDefaultsParams($connection, $formprocessor){
-    $call = $this->core->createCall($connection,'FormProcessorDefaults','getfields',['api_action'=>$formprocessor],['limit'=>0]);
+    $call = $this->core->createCall($connection,'FormProcessorDefaults','getfields',['api_action'=>$formprocessor],['limit'=>0],[]);
     $result = $this->core->executeCall($call);
     if($result['count']==0){
       return [];
@@ -288,7 +288,7 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
   }
 
   private function formProcessorDefaultsDefault($params){
-    $call = $this->core->createCall($this->configuration['connection'],'FormProcessorDefaults',$this->configuration['form_processor'],$params);
+    $call = $this->core->createCall($this->configuration['connection'],'FormProcessorDefaults',$this->configuration['form_processor'],$params,[],[]);
     $result = $this->core->executeCall($call);
     return $result;
   }
