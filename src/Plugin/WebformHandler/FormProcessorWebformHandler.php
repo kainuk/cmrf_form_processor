@@ -39,30 +39,18 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
 
   protected $core;
 
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, LoggerChannelFactoryInterface $logger_factory, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, WebformSubmissionConditionsValidatorInterface $conditions_validator, WebformTokenManagerInterface $token_manager, Core $core) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $logger_factory, $config_factory, $entity_type_manager, $conditions_validator);
-    $this->tokenManager = $token_manager;
-    $this->core = $core;
-  }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('logger.factory'),
-      $container->get('config.factory'),
-      $container->get('entity_type.manager'),
-      $container->get('webform_submission.conditions_validator'),
-      $container->get('webform.token_manager'),
-      $container->get('cmrf_core.core')
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->configFactory = $container->get('config.factory');
+    $instance->conditionsValidator =   $container->get('webform_submission.conditions_validator');
+    $instance->tokenManager =  $container->get('webform.token_manager');
+    $instance->loggerFactory  =  $container->get('logger.factory');
+    $instance->core = $container->get('cmrf_core.core');
+    return $instance;
   }
 
   /**

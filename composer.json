@@ -15,6 +15,7 @@
             "email" : "klaas.eikelboom@civicoop.org"
         }    ],
     "require": {
-        "drupal/cmrf_core": "8.x-kainuk-dev"
+        "drupal/cmrf_core": "*",
+        "drupal/webform": "6.*"
     }
 }
