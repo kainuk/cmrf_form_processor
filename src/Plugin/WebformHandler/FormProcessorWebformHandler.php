@@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\file\Entity\File;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformSubmissionConditionsValidatorInterface;
@@ -240,7 +241,17 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
     $params = [];
     foreach($fields as $key=>$field){
       if(key_exists($key,$data)){
-        $params[$key]=$data[$key];
+        if(in_array($this->getWebform()->getElement($key)['#type'],['webform_document_file','managed_file','webform_image_file'])){
+         $file = File::load($data[$key]);
+         $fileData = [
+            'name' => $file->getFilename(),
+            'mime_type' => $file->getMimeType(),
+            'content'=> base64_encode(file_get_contents(file_create_url($file->getFileUri())))
+          ];
+          $params[$key] = $fileData;
+        } else {
+          $params[$key] = $data[$key];
+        }
       }
     }
     if( $this->configuration['form_processor_current_contact']){
