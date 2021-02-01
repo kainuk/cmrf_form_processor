@@ -241,7 +241,7 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
     $params = [];
     foreach($fields as $key=>$field){
       if(key_exists($key,$data)){
-        if(in_array($this->getWebform()->getElement($key)['#type'],['webform_document_file','managed_file','webform_image_file'])){
+        if(isset($data[$key]) && in_array($this->getWebform()->getElement($key)['#type'],['webform_document_file','managed_file','webform_image_file'])){
          $file = File::load($data[$key]);
          $fileData = [
             'name' => $file->getFilename(),
