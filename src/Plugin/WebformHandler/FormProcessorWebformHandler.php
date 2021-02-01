@@ -246,7 +246,7 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
          $fileData = [
             'name' => $file->getFilename(),
             'mime_type' => $file->getMimeType(),
-            'content'=> base64_encode(file_get_contents(file_create_url($file->getFileUri())))
+            'content'=> base64_encode(file_get_contents($file->getFileUri()))
           ];
           $params[$key] = $fileData;
         } else {
