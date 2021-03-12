@@ -235,10 +235,9 @@ class FormProcessorWebformHandler extends WebformHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function postSave(WebformSubmissionInterface $webform_submission, $update = TRUE) {
+  public function postSave(WebformSubmissionInterface $webform_submission, $update = TRUE, $params = []) {
     $data = $webform_submission->getData();
     $fields = $this->configuration['form_processor_fields'];
-    $params = [];
     foreach($fields as $key=>$field){
       if(key_exists($key,$data)){
         if(isset($data[$key]) && in_array($this->getWebform()->getElement($key)['#type'],['webform_document_file','managed_file','webform_image_file'])){
