@@ -1,0 +1,62 @@
+<?php
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * @file
+ * Primary module hooks for mollie_ke module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+/*
+ *  Disables the form processor when an active molly_payment handler is found.
+ *  The responsibiltiy of the form_processor call is moved to the processing of
+ *  the mollie payment event.
+ */
+function cmrf_form_processor_mollie_webform_handler_invoke_post_save_alter(\Drupal\webform\Plugin\WebformHandlerInterface $handler, array &$args){
+
+  /* makes only sense for form processors */
+  if($handler->getHandlerId()!='cmfr_form_processor') {
+    return;
+  }
+
+  /* check if there is a molly payment handler */
+  $paymentHandler = false;
+  $webform = $handler->getWebform();
+
+  $handlers =  $webform->getHandlers();
+  foreach($handlers as $h){
+    if($h->getHandlerId()=='mollie_payment'){
+      $paymentHandler= $h;
+    }
+  }
+
+  /* no payment handler or no active payment handler means
+     proceed as normal */
+  if(!$paymentHandler || !$paymentHandler->isEnabled()){
+    return;
+  }
+
+  if($paymentHandler->checkConditions($paymentHandler->getWebformSubmission())){
+     $handler->disable();
+  }
+}
+
+/**
+ * Implements hook_help().
+ */
+function cmrf_form_processor_mollie_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the cmrf_form_processor module.
+    case 'help.page.cmrf_form_processor':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Moves the Form Processer handling to the Mollie Response event') . '</p>';
+      return $output;
+
+    default:
+  }
+}
