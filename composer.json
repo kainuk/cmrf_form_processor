@@ -7,7 +7,7 @@
         "CiviCRM",
         "Webform"
     ],
-    "homepage": "https://lab.civicrm.org/kainuk/cmrf_form_processor",
+    "homepage": "https://www.drupal.org/project/cmrf_form_processor",
     "minimum-stability": "dev",
     "authors": [
         {
