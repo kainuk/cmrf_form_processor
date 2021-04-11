@@ -16,6 +16,6 @@
         }    ],
     "require": {
         "drupal/cmrf_core": "*",
-        "drupal/webform": "6.*"
+        "drupal/webform": "^6.0"
     }
 }
