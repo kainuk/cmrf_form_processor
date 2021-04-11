@@ -1,6 +1,0 @@
-services:
-  mollie_ke.event_subscriber:
-    class: Drupal\cmrf_form_processor_mollie\EventSubscriber\MollieFormProcessorSubscriber
-    arguments: ['@entity_type.manager']
-    tags:
-      - { name: event_subscriber }

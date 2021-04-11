@@ -1,9 +1,0 @@
-name: Mollie Support for CMRF
-type: module
-description: Mollie Support for CMRF
-package: CiviCRM
-core: 8.x
-core_version_requirement: ^8 || ^9
-dependencies:
-  - mollie_webform
-
